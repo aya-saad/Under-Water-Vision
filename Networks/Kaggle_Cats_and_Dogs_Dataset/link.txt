@@ -1,0 +1,14 @@
+Kaggle cats and dogs dataset
+
+https://www.microsoft.com/en-us/download/details.aspx?id=54765
+
+
+Original dataset:
+cats images - 12500
+dogs images - 12500
+
+My code:
+training images for both cats and dogs- first 300 images
+validation images - 150
+test images - 150 
+
