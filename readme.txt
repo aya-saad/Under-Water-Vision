@@ -1,1 +1,1 @@
-kera alexnet implementation on mnist dataset
+kera implementation
