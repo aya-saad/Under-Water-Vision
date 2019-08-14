@@ -19,8 +19,8 @@ from keras.applications.resnet50 import ResNet50
 
 
 class Net:
-    def __init__(self, name='AlexNet',input_width=150, input_height=150, input_channels=3, num_classes=2, learning_rate=0.01,
-                 momentum=0.9, keep_prob=0.8):
+    def __init__(self, name='VGGNet',input_width=224, input_height=224, input_channels=1, num_classes=10, learning_rate=0.0001,
+                 momentum=0.9, keep_prob=0.5):
                  
         self.name = name
         
@@ -65,8 +65,8 @@ class Net:
         pre_generator = pre_data.flow(X_train,Y_train,batch_size=64)
         return pre_generator
 
-    def train(self,model,pre_generator,X_test,Y_test):
-        model.fit_generator(pre_generator, steps_per_epoch=30, nb_epoch=30, verbose=1,
+    def train(self,model,pre_generator,X_train,Y_train, X_test, Y_test):
+        model.fit_generator(pre_generator, steps_per_epoch=30, nb_epoch=50, verbose=1,
                     validation_data=(X_test, Y_test))
         return model
 
@@ -321,19 +321,19 @@ class Net:
 
     def VGG_model(self,img_shape = (28,28,1),n_classes=10):
         VGG = Sequential()
-        VGG.add(Conv2D(64,(3,3),activation='relu',input_shape=img_shape))
-        VGG.add(Conv2D(64,(3,3),activation='relu'))
+        VGG.add(Conv2D(64,(3,3),Activation='relu',input_shape=img_shape))
+        VGG.add(Conv2D(64,(3,3),Activation='relu'))
         VGG.add(MaxPooling2D(pool_size=(2, 2)))
-        VGG.add(Conv2D(128,(3,3),activation='relu'))
-        VGG.add(Conv2D(128,(3,3),activation='relu'))
+        VGG.add(Conv2D(128,(3,3),Activation='relu'))
+        VGG.add(Conv2D(128,(3,3),Activation='relu'))
         VGG.add(MaxPooling2D(pool_size=(2, 2)))
-        VGG.add(Conv2D(256,(3,3),activation='relu'))
-        VGG.add(Conv2D(256,(3,3),activation='relu'))
-        VGG.add(Conv2D(256,(3,3),activation='relu'))
+        VGG.add(Conv2D(256,(3,3),Activation='relu'))
+        VGG.add(Conv2D(256,(3,3),Activation='relu'))
+        VGG.add(Conv2D(256,(3,3),Activation='relu'))
         VGG.add(MaxPooling2D(pool_size=(2, 2)))
-        VGG.add(Conv2D(512,(3,3),activation='relu'))
-        VGG.add(Conv2D(512,(3,3),activation='relu'))
-        VGG.add(Conv2D(512,(3,3),activation='relu'))
+        VGG.add(Conv2D(512,(3,3),Activation='relu'))
+        VGG.add(Conv2D(512,(3,3),Activation='relu'))
+        VGG.add(Conv2D(512,(3,3),Activation='relu'))
         VGG.add(MaxPooling2D(pool_size=(2, 2)))
         VGG.add(Flatten())
         VGG.add(Dense(4096, Activation ='relu'))
