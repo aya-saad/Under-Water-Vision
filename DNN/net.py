@@ -1,6 +1,14 @@
-# -*- coding: utf-8 -*-
-
+#################################################################################################################
+# A Modularized implementation for
+# Image enhancement, extracting descriptors, clustering, evaluation and visualization
+# Integrating all the algorithms stated above in one framework
+# CONFIGURATION - LOAD_DATA - IMAGE_ENHANCEMENTS - IMAGE_DESCRIPTORS - CLUSTERING - EVALUATION_VISUALIZATION
+# Implementation of the Net class
+# The Deep Neural Netowrk Architecture
+# Author: Aya Saad
+# Date created: 30 September 2019
 #
+#################################################################################################################
 from sklearn import metrics
 
 import tflearn
@@ -168,7 +176,6 @@ class Net:
         print(normalized_confusion_matrix)
         return y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalized_confusion_matrix
 
-
     def build_model(self, model_file):
         '''
         Build the model depends on the initialize network name
@@ -181,39 +188,18 @@ class Net:
         :param model_file: the model file
         :return: The model and and convolution array
         '''
-        print(self.name)
-        self.model_file = model_file
-        print(self.model_file)
-        if self.name == 'OrgNet':
-            return self.__build_OrgNet()
-        if self.name == 'LeNet':
-            return self.__build_LeNet()
-        elif self.name == 'MINST':
-            return self.__build_MINST()
-        elif self.name == 'CIFAR10':
-            return self.__build_CIFAR10()
-        elif self.name == 'AlexNet':
-            return self.__build_AlexNet()
-        elif self.name == 'VGGNet':
-            return self.__build_VGGNet()
-        elif self.name == 'GoogLeNet':
-            return self.__build_GoogLeNet()
-        elif self.name == 'ResNet':
-            return self.__build_ResNet()
-        elif self.name == 'ResNeXt':
-            return self.__build_ResNeXt()
-        elif self.name == 'PlankNet':
-            return self.__build_PlankNet()
-        elif self.name == 'CoapNet':
-            print(self.name)
-            return self.__build_CoapNet()
+        pass
 
-    def __build_OrgNet(self):
+    pass
+
+class SilCamNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model based on LeCun proposed architecture
         :return: The model and and convolution array
         '''
-        print("Building" + self.name + " model ...")
+        self.model_file = model_file
+        print("Building SilCamNet model ...")
         # This resets all parameters and variables, leave this here
         tf.reset_default_graph()
         # Include the input layer, hidden layer(s), and set how you want to train the model
@@ -263,8 +249,8 @@ class Net:
         net = fully_connected(net, 512, activation='relu')
 
         # Step 7: Dropout - throw away some data randomly during training to prevent over-fitting
-        #print('Step 7: Dropout - throw away some data randomly during training to prevent over-fitting')
-        #net = dropout(net, self.keep_prob)
+        print('Step 7: Dropout - throw away some data randomly during training to prevent over-fitting')
+        net = dropout(net, self.keep_prob)
 
         # Step 8: Fully-connected neural network with outputs to make the final prediction
         net = fully_connected(net, self.num_classes+1, activation='softmax')
@@ -277,12 +263,15 @@ class Net:
 
         conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6]
         return model, conv_arr
+    pass
 
-    def __build_CoapNet(self):
+class CoapNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model based on CoapNet proposed architecture
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building" + self.name + " model ...")
         # This resets all parameters and variables, leave this here
         tf.reset_default_graph()
@@ -354,12 +343,15 @@ class Net:
 
         conv_arr = [conv_1, conv_2, conv_3, conv_4]
         return model, conv_arr
+    pass
 
-    def __build_LeNet(self):
+class LeNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model based on LeCun proposed architecture
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building" + self.name + " model ...")
         # This resets all parameters and variables, leave this here
         tf.reset_default_graph()
@@ -417,13 +409,16 @@ class Net:
 
         conv_arr = [conv_1, conv_2]
         return model, conv_arr
+    pass
 
-    def __build_MINST(self):
+class MINSTNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model
         MINSTNet - based on LeCun network used to classify the MINST dataset
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building" + self.name + " model ...")
         # This resets all parameters and variables, leave this here
         tf.reset_default_graph()
@@ -483,13 +478,16 @@ class Net:
 
         conv_arr = [conv_1, conv_2]
         return model, conv_arr
+    pass
 
-    def __build_CIFAR10(self):
+class CIFAR10Net(Net):
+    def build_model(self, model_file):
         '''
         Build the model
         CIFAR10 - the version of the LeNet used to classify the CIFAR dataset for 10 classes
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building" + self.name + " model ...")
 
         # This resets all parameters and variables, leave this here
@@ -544,8 +542,10 @@ class Net:
 
         conv_arr = [conv_1, conv_2, conv_3]
         return model, conv_arr
+    pass
 
-    def __build_PlankNet(self):
+class PlankNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model
         PlanktonNet - ZooplanktonNet: (Dai et al. 2016) achieve 93.7% accuracy
@@ -556,6 +556,7 @@ class Net:
             from more dimensions so the higher the better (512 was the winner)
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building PlanktonNet")
         print(self.name)
         tf.reset_default_graph()
@@ -605,13 +606,16 @@ class Net:
 
         conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5]
         return model, conv_arr
+    pass
 
-    def __build_AlexNet(self):
+class AlexNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model
         AlexNet - the version of AlexNet reconstructed to be compatible with the input images
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building AlexNet")
         print(self.name)
         #tf.reset_default_graph()
@@ -653,13 +657,16 @@ class Net:
 
         conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5]
         return model, conv_arr
+    pass
 
-    def __build_VGGNet(self):
+class VGGNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model
         VGGNet - the version of VGGNet reconstructed to be compatible with the input images
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building" + self.name + " model ...")
         # This resets all parameters and variables, leave this here
         tf.reset_default_graph()
@@ -729,13 +736,16 @@ class Net:
         conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6, conv_7,
                     conv_8, conv_9, conv_10, conv_11, conv_12, conv_13]
         return model, conv_arr
+    pass
 
-    def __build_GoogLeNet(self):
+class GoogleNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model
         GoogleNet (Inception Net) - the version of GoogleNet reconstructed to be compatible with the input images
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building GoogLeNet")
         print(self.name)
         print("Building" + self.name + " model ...")
@@ -940,13 +950,16 @@ class Net:
         conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6, conv_7,
                     conv_8, conv_9, conv_10, conv_11]
         return model, conv_arr
+    pass
 
-    def __build_ResNet(self):
+class ResNet(Net):
+    def build_model(self, model_file):
         '''
         Build the model
         ResNet (Residual Network) - the version of ResNet reconstructed to be compatible with the input images
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         # Residual blocks
         # 32 layers: n=5, 56 layers: n=9, 110 layers: n=18
         n = 5
@@ -985,13 +998,16 @@ class Net:
         model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file, clip_gradients=0.)
         conv_arr = [conv_1]
         return model, conv_arr
+    pass
 
-    def __build_ResNeXt(self):
+class ResNeXt(Net):
+    def build_model(self, model_file):
         '''
         Build the model
         ResNeXt - Aggregated residual transformations network (ResNeXt)
         :return: The model and and convolution array
         '''
+        self.model_file = model_file
         print("Building ResNeXt")
         print(self.name)
         print("Building" + self.name + " model ...")
@@ -1032,3 +1048,4 @@ class Net:
                             clip_gradients=0.)
         conv_arr = [conv_1]
         return model, conv_arr
+    pass
