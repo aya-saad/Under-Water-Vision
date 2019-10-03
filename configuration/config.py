@@ -41,6 +41,8 @@ misc_arg.add_argument('--output_dir', type=str, default='./output',
                         help='Directory where output is saved')
 misc_arg.add_argument('--plot_dir', type=str, default='./plots',
                         help='Directory where plots are saved')
+misc_arg.add_argument('--model_dir', type=str, default='./model',
+                        help='Directory where the trained DNN is stored')
 
 
 def get_config():
