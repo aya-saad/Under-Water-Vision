@@ -13,14 +13,18 @@ import os
 import csv
 import pandas as pd
 import numpy as np
+import h5py
 from sklearn.model_selection import train_test_split, KFold
 
 
 class DatasetLoader:
     classList = None
     input_data = None       #self.input_data = self.get_data()
+    WIN = ''  # '_win' for windows running version
+    IMSETTEST = 'image_set_test'  # name of the test set file
+    IMSETTRAIN = 'image_set_train'  # name of the train set file
 
-    def __init__(self, data_dir, header_file, filename):
+    def __init__(self, data_dir, header_file, filename, WIN=''):
         '''
         Dataset constructor
         :param data_dir:    name of the data directory
@@ -31,6 +35,11 @@ class DatasetLoader:
         self.header_file = header_file
         self.data_dir = data_dir
         self.filename = filename
+        f = filename.split('.dat')[0]
+        self.IMSETTEST = f + '_test'  # name of the test set file
+        self.IMSETTRAIN = f + '_train'  # name of the train set file
+        self.WIN = WIN
+        print(filename, f, self.IMSETTEST,self.IMSETTRAIN)
 
 
     def get_classes_from_file(self):
@@ -123,7 +132,7 @@ class DatasetLoader:
 
         return train_x.T, train_y.T, test_x.T, test_y.T
 
-    def split_CV(self, n_splits=10):
+    def split_CSV(self, n_splits=10):
         '''
         Generated the cross validation data sets
         :return: X_train input training set, Y_train output training set,
@@ -138,4 +147,16 @@ class DatasetLoader:
 
             yield train_x.T,train_y.T,test_x.T,test_y.T
 
+    def load_hd5_data(self, type='train', write_to_file = 'r', input_width = '', round_num = ''):
+        if type == 'train':
+            file_name = self.IMSETTRAIN + round_num + self.WIN + ".h5"
+        else:
+            file_name = self.IMSETTEST + round_num + self.WIN + ".h5"
+        #out_hd5 = os.path.join(self.data_dir, file_name)  # str(input_width) + '_db3' +
+        print(file_name)
+        h5f = h5py.File(file_name, write_to_file)
+        X = h5f['X']
+        Y = h5f['Y']
+        print('X.shape', X.shape, 'Y.shape', Y.shape,'Y=', Y[0])
 
+        return X, Y

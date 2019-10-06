@@ -73,6 +73,7 @@ class Net:
         img_prep.add_featurewise_stdnorm()
         return img_prep
 
+
     def __data_augmentation(self):
         '''
         Data Augmentation
@@ -88,6 +89,8 @@ class Net:
         img_aug.add_random_rotation(max_angle=25.)
         img_aug.add_random_blur(sigma_max=3.)
         return img_aug
+
+
 
     def train(self,model, trainX, trainY, testX, testY,
               round_num='01', n_epoch=50, batch_size=128,
@@ -124,36 +127,22 @@ class Net:
 
         # print("\nTest prediction for x = ", testX)
         print("model evaluation ")
+        print('testX.shape', testX.shape, 'testY.shape', testY.shape, 'testY=', testY)
         print('testX.type',type(testX))
         print('testY.type', type(testY))
-        #predictions = model.predict(testX)
-        # predictions = [int(i) for i in model.predict(testX)]
-        #print("predictions: ", predictions)
-        '''
 
         y_pred = []
-        #for pred in predictions:
-        for x in testX:
-            pred = model.predict([x])
-            y_pred.append(pred.argmax(axis=0))
-            print("prediction x, np.argmax(pred): ", pred, pred.argmax(axis=0))
-        print(y_pred)
-        print("testY: ")
         y_true = []
         for ty in testY:
-            y_true.append(ty.argmax(axis=0))
             print("ty, y_true: ", ty, ty.argmax(axis=0))
-        print(y_true)
-        '''
-        y_pred = []
-        y_true = []
+            y_true.append(ty.argmax(axis=0))
+        print('y_true  ', y_true)
         pred = model.predict(testX)
+        print('pred ',pred)
         for ty in pred:
             print("ty, y_pred: ", ty, ty.argmax(axis=0))
             y_pred.append(ty.argmax(axis=0))
-        for ty in testY:
-            print("ty, y_true: ", ty, ty.argmax(axis=0))
-            y_true.append(ty.argmax(axis=0))
+        
 
         accuracy = metrics.accuracy_score(y_true, y_pred)
         print("Accuracy: {}%".format(100 * accuracy))
@@ -174,7 +163,8 @@ class Net:
         print("")
         print("Confusion matrix (normalised to % of total test data):")
         print(normalized_confusion_matrix)
-        return y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalized_confusion_matrix
+
+        return y_pred, y_true , accuracy, precision, recall, f1_score, confusion_matrix, normalized_confusion_matrix
 
     def build_model(self, model_file):
         '''
@@ -193,6 +183,34 @@ class Net:
     pass
 
 class SilCamNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
+
     def build_model(self, model_file):
         '''
         Build the model based on LeCun proposed architecture
@@ -266,6 +284,33 @@ class SilCamNet(Net):
     pass
 
 class CoapNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model based on CoapNet proposed architecture
@@ -346,6 +391,33 @@ class CoapNet(Net):
     pass
 
 class LeNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model based on LeCun proposed architecture
@@ -412,6 +484,33 @@ class LeNet(Net):
     pass
 
 class MINSTNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model
@@ -481,6 +580,33 @@ class MINSTNet(Net):
     pass
 
 class CIFAR10Net(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model
@@ -545,6 +671,33 @@ class CIFAR10Net(Net):
     pass
 
 class PlankNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model
@@ -609,6 +762,33 @@ class PlankNet(Net):
     pass
 
 class AlexNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model
@@ -660,6 +840,33 @@ class AlexNet(Net):
     pass
 
 class VGGNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model
@@ -739,6 +946,33 @@ class VGGNet(Net):
     pass
 
 class GoogleNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model
@@ -953,6 +1187,33 @@ class GoogleNet(Net):
     pass
 
 class ResNet(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model
@@ -1001,6 +1262,33 @@ class ResNet(Net):
     pass
 
 class ResNeXt(Net):
+    def __preprocessing(self):
+        '''
+                Image preprocessing
+                :return: img_prep - preprocessed images
+                '''
+        # normalisation of images
+        print("Normalisation of images...")
+        img_prep = ImagePreprocessing()
+        img_prep.add_featurewise_zero_center()
+        img_prep.add_featurewise_stdnorm()
+        return img_prep
+
+    def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
+        # Create extra synthetic training data by flipping & rotating images
+        print("Data augmentation...")
+        img_aug = ImageAugmentation()
+        img_aug.add_random_flip_leftright()
+        img_aug.add_random_rotation(max_angle=25.)
+        img_aug.add_random_blur(sigma_max=3.)
+        return img_aug
     def build_model(self, model_file):
         '''
         Build the model

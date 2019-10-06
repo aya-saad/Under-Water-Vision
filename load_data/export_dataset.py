@@ -15,10 +15,7 @@ import numpy as np
 from tflearn.data_utils import build_hdf5_image_dataset
 
 class DatasetExporter:
-    WIN = ''  # '_win' for windows running version
     SPLIT_PERCENT = 0.05  # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
-    IMSETTEST = 'image_set_test'  # name of the test set file
-    IMSETTRAIN = 'image_set_train'  # name of the train set file
 
     def __init__(self, dataset_loader):
         '''
@@ -35,8 +32,8 @@ class DatasetExporter:
         export the train and test dataset and save them into separate files
         :param save_split: when True save the dataset into the files
         '''
-        test_filename = self.IMSETTEST + self.WIN + '.dat'
-        train_filename = self.IMSETTRAIN + self.WIN + '.dat'
+        test_filename = self.dataset_loader.IMSETTEST + self.dataset_loader.WIN + '.dat'
+        train_filename = self.dataset_loader.IMSETTRAIN + self.dataset_loader.WIN + '.dat'
         test_file = os.path.join(self.dataset_loader.data_dir, test_filename)
         train_file = os.path.join(self.dataset_loader.data_dir, train_filename)
         print('Split the dataset into 95% training set and 5% test set ...')
@@ -49,7 +46,7 @@ class DatasetExporter:
             self.dataset_loader.save_data_to_file(Train.T, train_file)
             self.dataset_loader.save_data_to_file(Test.T, test_file)
 
-    def export_CV(self, n_splits=10, save_split=True):
+    def export_CSV(self, n_splits=10, save_split=True):
         '''
         export the cross validation datasets
         :param set_file:
@@ -57,13 +54,13 @@ class DatasetExporter:
         :param save_split: when True save the datasets into the files
         '''
         i = 0
-        for train_x,train_y,test_x,test_y in self.dataset_loader.split_CV(n_splits=n_splits):
+        for train_x,train_y,test_x,test_y in self.dataset_loader.split_CSV(n_splits=n_splits):
             i = i + 1
             round_num = str(i)
             if i < 10:
                 round_num = '0' + round_num
-            test_filename = self.IMSETTEST + round_num + self.WIN + '.dat'
-            train_filename = self.IMSETTRAIN + round_num + self.WIN + '.dat'
+            test_filename = self.dataset_loader.IMSETTEST + round_num + self.dataset_loader.WIN + '.dat'
+            train_filename = self.dataset_loader.IMSETTRAIN + round_num + self.dataset_loader.WIN + '.dat'
             test_file = os.path.join(self.dataset_loader.data_dir, test_filename)
             train_file = os.path.join(self.dataset_loader.data_dir, train_filename)
             Train = np.vstack((train_x, train_y))
