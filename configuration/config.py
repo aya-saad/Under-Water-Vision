@@ -38,11 +38,11 @@ misc_arg = add_argument_group('Path Params')
 misc_arg.add_argument('--data_dir', type=str, default='./dataset',
                         help='Directory where data is stored')
 misc_arg.add_argument('--output_dir', type=str, default='./output',
-                        help='Directory where output is saved')
+                        help='Directory where output is stored')
 misc_arg.add_argument('--plot_dir', type=str, default='./plots',
-                        help='Directory where plots are saved')
+                        help='Directory where plots are stored')
 misc_arg.add_argument('--model_dir', type=str, default='./model',
-                        help='Directory where the trained DNN is stored')
+                        help='Directory where the trained model is stored')
 
 
 def get_config():
