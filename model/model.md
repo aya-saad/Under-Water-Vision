@@ -34,7 +34,6 @@ Each directory is a DNN architecture
     |               |                 |                 |                 |                 | "mnt/DATA/model/modelResNet/ResNetDBII"       |
     | ResNeXt       | 92.24% - 83.80% | 92.63% - 84.40% | 92.24% - 83.80% | 92.21% - 82.68% | "mnt/DATA/model/modelResNeXt/ResNeXtDBI"      |
     |               |                 |                 |                 |                 | "mnt/DATA/model/modelResNeXt/ResNeXtDBII"     |
-    |               |                 |                 |                 |                 |                |
 
 ---------------------------------------------------    
 
