@@ -15,7 +15,6 @@ Each directory is a DNN architecture
 |               | Accuracy        | Precision       | Recall          | F1 Score        | Location                                      |
 | ------------- | --------------- | --------------- | --------------- | --------------- | --------------------------------------------- |
 |               | DBI - DBII      | DBI - DBII      | DBI - DBII      | DBI - DBII      | DBI - DBII                                    |
-| ------------- | --------------- | --------------- | --------------- | --------------- | --------------------------------------------- |
 | LeNet         | 56.84% - 57.44% | 48.38% - 32.99% | 56.84% - 57.44% | 49.10% - 41.91% | "mnt/DATA/model/modelLENET/LeNetDBI"          | 
 |               |                 |                 |                 |                 | "mnt/DATA/model/modelLENET/LeNetDBI"          |
 | MINST         | 59.94% - 57.44% | 37.53% - 32.99% | 59.94% - 57.44% | 45.92% - 41.91% | "mnt/DATA/model/modelMINST\MINSTDBI"          | 
@@ -42,7 +41,7 @@ Each directory is a DNN architecture
 Performance Metrics of the SilCamNet and COAPNet over DBIII with varying input size and drop-out 
 
 | Input size    | keep drop out | Accuracy      | Precision     | Recall        | F1 Score      | Location      |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-|               | probability   | DBIII         | DBIII         | DBIII         | DBIII         |               |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+|               | probability   | DBIII         | DBIII         | DBIII         | DBIII         |               |
+|               |               |               |               |               |               |               |
 
