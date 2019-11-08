@@ -1,0 +1,5 @@
+
+venv/
+.DS_store
+../.DS_Store
+../.idea/workspace.xml
