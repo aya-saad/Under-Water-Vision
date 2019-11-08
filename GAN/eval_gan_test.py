@@ -19,9 +19,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
 from absl import flags
 from absl import logging
+from absl import app
 
 import logging
 import sys
@@ -33,8 +33,6 @@ from compare_gan import utils
 from compare_gan.metrics import fid_score as fid_score_lib
 from compare_gan.metrics import inception_score as inception_score_lib
 
-
-from PIL import Image
 import gin
 import numpy as np
 import matplotlib.pyplot  as plt
@@ -98,7 +96,7 @@ def _update_bn_accumulators(sess, generated, num_accu_examples):
 
 
 def evaluate_tfhub_module(module_spec, eval_tasks, use_tpu,
-                          num_averaging_runs):
+                          num_averaging_runs, results_dir):
   """Evaluate model at given checkpoint_path.
   Args:
     module_spec: string, path to a TF hub module.
@@ -112,16 +110,13 @@ def evaluate_tfhub_module(module_spec, eval_tasks, use_tpu,
   """
   # Make sure that the same latent variables are used for each evaluation.
   np.random.seed(42)
-  dataset = datasets.get_dataset(name="cifar10")
-  #dataset = datasets.DATASETS["cifar10"](seed=547)
-  #num_test_examples = dataset.eval_test_samples
-  num_test_examples = 10
+  dataset = datasets.DATASETS["cifar10"](seed=547)
+  num_test_examples = dataset.eval_test_samples
 
   batch_size = 64
   num_batches = int(np.ceil(num_test_examples / batch_size))
 
   # Load and update the generator.
-  result_dict = {}
   fake_dsets = []
   with tf.Graph().as_default():
     tf.set_random_seed(42)
@@ -140,6 +135,7 @@ def evaluate_tfhub_module(module_spec, eval_tasks, use_tpu,
         z = z_generator(shape=[batch_size, z_dim])
         if "labels" in generator.get_input_info_dict():
           # Conditional GAN.
+          print("\n\nConditinoal GAN: {}\n\n".format(generator.get_input_info_dict().labels))
           assert dataset.num_classes
           labels = tf.random.uniform(
               [batch_size], maxval=dataset.num_classes, dtype=tf.int32)
@@ -147,6 +143,7 @@ def evaluate_tfhub_module(module_spec, eval_tasks, use_tpu,
 
         else:
           # Unconditional GAN.
+          print("\n\nUNCONDITIONAL GAN\n\n")
           assert "labels" not in generator.get_input_info_dict()
           inputs = dict(z=z)
         return generator(inputs=inputs, as_dict=True)["generated"]
@@ -157,19 +154,8 @@ def evaluate_tfhub_module(module_spec, eval_tasks, use_tpu,
       else:
         generated = sample_from_generator()
 
-      print("\n\n\n global variables initializer starting\n\n\n")
       tf.global_variables_initializer().run()
-      print("\n\n\n global variables initializer finished\n\n\n")
 
-      """
-      if _update_bn_accumulators(sess, generated, num_accu_examples=204800):
-        saver = tf.train.Saver()
-        save_path = os.path.join(module_spec, "model-with-accu.ckpt")
-        checkpoint_path = saver.save(
-            sess,
-            save_path=save_path)
-        logging.info("Exported generator with accumulated batch stats to "
-                     "%s.", checkpoint_path)"""
       if not eval_tasks:
         logging.error("Task list is empty, returning.")
         return
@@ -190,13 +176,9 @@ def evaluate_tfhub_module(module_spec, eval_tasks, use_tpu,
         print("\n\n images type: ", type(images))
         print("\n\n images shape: ", images.shape)
 
-        for j in range(10):
-            #img = Image.fromarray(images[i], 'RGB')
-            #img.save('my_{}.png'.format(i))
-            #arr_ = np.squeeze(images[j])  # you can give axis attribute if you wanna squeeze in specific dimension
+        for j in range(len(images[0])):
             plt.imshow(images[j].astype('uint8'))
-            plt.savefig('photos_cdgan_celeba64/my_{}_{}.png'.format(j, i))
-            #plt.show()
+            plt.savefig('{}my_{}_{}.png'.format(results_dir, j, i))
 
 
   real_dset = eval_utils.EvalDataSample(
@@ -227,11 +209,16 @@ def evaluate_tfhub_module(module_spec, eval_tasks, use_tpu,
 
     result_dict.update(result_statistics)
     print(result_dict)
+    # Saving the results to a file
+    f = open("{}results_dict.txt".format(results_dir), "w+")
+    for key in result_dict:
+        f.write("{}: {}\n".format(key, result_dict[key]))
+    f.close()
   return result_dict
 
 
-def main():
-    model_name = '../results_cdgan_celeba64/tfhub/100000/'
+def main(unused_argv):
+    model_name = '../results_resnet_cifar10/tfhub/40000/'
     module_spec = hub.load_module_spec(model_name)
     use_tpu = False
     num_averaging_runs = 10
@@ -240,8 +227,12 @@ def main():
           fid_score_lib.FIDScoreTask()
       ]
 
+    results_dir = "../results_resnet_cifar10/photos3/"
+
     evaluate_tfhub_module(module_spec=module_spec, eval_tasks=eval_tasks,
-                          use_tpu=use_tpu, num_averaging_runs=num_averaging_runs)
+                          use_tpu=use_tpu, num_averaging_runs=num_averaging_runs,
+                          results_dir=results_dir)
 
-main()
-
+if __name__ == '__main__':
+  #app.run is necessary in order to parse the flags.
+  app.run(main)
