@@ -44,7 +44,7 @@ class Whoi(tfds.core.GeneratorBasedBuilder):
   def _split_generators(self, dl_manager):
     """Returns SplitGenerators."""
     label_file = "batches.meta.txt"
-    whoi_path = "/Users/odakiese/tensorflow_datasets/whoi_org"
+    whoi_path = "/home/odask/tensorflow_datasets/whoi_org"
     
     # Load the label names
     labels_path = "{}/{}".format(whoi_path, label_file)
@@ -57,7 +57,7 @@ class Whoi(tfds.core.GeneratorBasedBuilder):
         for label in os.listdir("{}/{}".format(whoi_path, splitdir)):
             if label != ".DS_Store":
                 yield os.path.join(whoi_path, splitdir, label)
-    
+    ww
     return [
         tfds.core.SplitGenerator(
             name=tfds.Split.TRAIN,
@@ -79,18 +79,22 @@ class Whoi(tfds.core.GeneratorBasedBuilder):
             for labels, np_image in _load_data(label_name, label_dict, img_path):
                 record = dict(zip(["label"], labels))
                 record["image"] = np_image
-                yield index, record
-                index += 1
+                # In order to run on the GPU, only return record.
+                yield record
+                #yield index, record
+                #index += 1
 
 def _load_data(label_name, label_dict, path):
     """Yields (labels, np_image) tuples."""
-    img = np.array(cv2.imread(path)
-            .reshape((3, 128, 128))
+    # Default value is cv2.IMREAD_COLOR
+    img = np.array(cv2.imread(path=path, flag=cv2.IMREAD_GRAYSCALE)
+            .reshape((1, 128, 128))
             .transpose(1, 2, 0))
     label = np.array([label_dict[label_name]])
     yield label, img
     
     """
+    The below is how the cifar10 is loading the images.
     with tf.io.gfile.GFile(path, "rb") as f:
         data = f.read()
         img = (np.frombuffer(data, dtype=np.uint8)
