@@ -1,46 +1,79 @@
 
-#from __future__ import absolute_import, division, print_function, unicode_literals
 import tensorflow as tf
-import IPython.display as display
-from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 import pathlib
+import cv2
+import split_folders
 
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
-"""
-def load_image(infilename):
-    img = Image.open(infilename)
-    img.load()
-    npdata = np.asarray(img, dtype="int32")
-    return npdata
-"""
 
 def rescale_image(filepath, filepath_out):
-    height = 128
-    width = 128
+    """
     img = Image.open(filepath)
-    #img_resized = img.resize((height, width), Image.NEAREST)
-    img_resized = img.resize((height, width), Image.BILINEAR) #gave a smoother result
-    img_resized.save(filepath_out)
+    org_size = img.size
+    ratio = float(IMG_SIZE) / max(org_size)
+    new_size = tuple([int(x * ratio) for x in org_size])
 
+    # BILINEAR, NEAREST, BICUBIC, ANTIALIAS
+    #options = {"Bilinear": Image.BILINEAR, "Nearest": Image.NEAREST, "Bicubinc": Image.BICUBIC, "Antialias": Image.ANTIALIAS}
+    #for name in options:
+    img_resized = img.resize(new_size, Image.ANTIALIAS)
+    #new_im = Image.new("L", (IMG_SIZE, IMG_SIZE))   # L is for black and white
+    #new_im.paste(img_resized, ((IMG_SIZE - new_size[0]) // 2, (IMG_SIZE - new_size[1]) // 2))
+
+    delta_w = IMG_SIZE - new_size[0]
+    delta_h = IMG_SIZE - new_size[1]
+    padding = (delta_w // 2, delta_h // 2, delta_w - (delta_w // 2), delta_h - (delta_h // 2))
+    new_im = ImageOps.expand(img_resized, padding)
+    greyscale_img = ImageOps.grayscale(new_im)
+
+    greyscale_img.show()
+    #img_resized.save("{}_{}".format(name, filepath_out))
+"""
+    desired_size = IMG_SIZE
+    im_pth = filepath
+
+    im = cv2.imread(im_pth)
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    old_size = im.shape[:2]  # old_size is in (height, width) format
+
+    ratio = float(desired_size) / max(old_size)
+    new_size = tuple([int(x * ratio) for x in old_size])
+
+    im = cv2.resize(im, (new_size[1], new_size[0]))
+
+    delta_w = desired_size - new_size[1]
+    delta_h = desired_size - new_size[0]
+    top, bottom = delta_h // 2, delta_h - (delta_h // 2)
+    left, right = delta_w // 2, delta_w - (delta_w // 2)
+
+    new_im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_REPLICATE)
+    cv2.imwrite(filepath_out, new_im)
+    print(filepath_out)
+
+    return new_im
 
 def rescale_corpus(dir, classes):
     for img_class in classes:
+        img_class = img_class.lower()
         img_class_path = "{}/{}".format(dir, img_class)
-        img_class_path_out ="{}_scaled_bl/{}".format(corpus, img_class)
+        img_dir_out = "{}_scaled32".format(corpus)
+        img_class_path_out = "{}_scaled32/{}".format(corpus, img_class)
 
         if not os.path.exists(img_class_path_out):
             os.makedirs(img_class_path_out)
 
+        n = 0
         for img in os.listdir(img_class_path):
-            if img.split(".")[-1] == "png":
-                filepath = "{}/{}".format(img_class_path, img)
-                filepath_out = "{}/{}".format(img_class_path_out, img)
-                rescale_image(filepath, filepath_out)
-    return img_class_path_out
+            if n < 2000:
+                if img.split(".")[-1] == "png":
+                    filepath = "{}/{}".format(img_class_path, img)
+                    filepath_out = "{}/{}".format(img_class_path_out, img)
+                    rescale_image(filepath, filepath_out)
+                    n += 1
+    return img_dir_out
 
 
 def load_corpus(data_dir):
@@ -53,97 +86,22 @@ def load_corpus(data_dir):
     return list_ds, class_names, image_count
 
 
-def get_label(file_path):
-    # convert the path to a list of path components
-    parts = tf.strings.split(file_path, os.path.sep)
-    # The second to last is the class-directory
-    return parts[-2] == CLASS_NAMES
-
-
-def decode_img(img):
-    # convert the compressed string to a 3D uint8 tensor
-    img = tf.image.decode_jpeg(img, channels=3)
-    # Use `convert_image_dtype` to convert to floats in the [0,1] range.
-    img = tf.image.convert_image_dtype(img, tf.float32)
-    # resize the image to the desired size.
-    return tf.image.resize(img, [IMG_WIDTH, IMG_HEIGHT])
-
-
-def process_path(file_path):
-    label = get_label(file_path)
-    # load the raw data from the file as a string
-    img = tf.io.read_file(file_path)
-    img = decode_img(img)
-    return img, label
-
-
-def to_tfrecord(dataset):
-    data_dir = pathlib.Path(dataset)
-    IMAGE_COUNT = len(list(data_dir.glob('*/*.png')))
-
-
-def _bytes_feature(value):
-    """Returns a bytes_list from a string / byte."""
-    # If the value is an eager tensor BytesList won't unpack a string from an EagerTensor.
-    if isinstance(value, type(tf.constant(0))):
-        value = value.numpy()
-    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
-
-def _float_feature(value):
-    """Returns a float_list from a float / double."""
-    return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
-
-def _int64_feature(value):
-    """Returns an int64_list from a bool / enum / int / uint."""
-    return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
-
-def serialize_example(feature0, feature1, feature2, feature3):
-    feature = {
-        'feature0': _int64_feature(feature0),
-        'feature1': _float_feature(feature1),
-        'feature2': _bytes_feature(feature2),
-        'feature3': _bytes_feature(feature3),
-    }
-
-    # Create a Features message using tf.train.Example.
-    example_proto = tf.train.Example(features=tf.train.Features(feature=feature))
-    return example_proto.SerializeToString()
-
-
 if __name__ == '__main__':
-    #classes = ["Tintinnid", "Prorocentrum", "Dictyocha"]
-    # For scaling corpus
-    classes = ["zooplankton", "Tontonia_gracillima", "Strombidium_oculatum"]
+    IMG_SIZE = 32
+
+    classes = ["detritus", "Leptocylindrus", "Rhizosolenia",
+               "Cylindrotheca", "dino30"]
     corpus = "2014"
-    corpus_scaled = "2014_scaled_bl"
 
-    #corpus_scaled = rescale_corpus(corpus, classes)
+    scaled_corpus = rescale_corpus(corpus, classes)
 
-    IMG_WIDTH = 128
-    IMG_HEIGHT = 128
-
-    list_ds, CLASS_NAMES, IMAGE_COUNT = load_corpus(corpus_scaled)
-
-    # Set `num_parallel_calls` so multiple images are loaded/processed in parallel.
-    labeled_ds = list_ds.map(process_path, num_parallel_calls=AUTOTUNE)
-    for image, label in labeled_ds.take(1):
-        print("Image shape: ", image.numpy().shape)
-        print("Label: ", label.numpy())
-
-    for feature0, feature1, feature2, feature3 in dataset.take(1):
-        serialized_example = serialize_example(feature0,
-                                               feature1,
-                                               feature2,
-                                               tf.io.serialize_tensor(feature3))
-        print(serialized_example)
+    scaled_corpus_split = "{}_split".format(scaled_corpus)
+    split_folders.ratio(scaled_corpus, output=scaled_corpus_split, seed=1337, ratio=(.9, .1))  # default values
 
 
 
-#scale ned så høyde eller bredde er max 128
-#lag tomt array med zeros og fyll inn bildet
-#fyll opp de zerosene med random farger fra kantene på bildene/hjørnene på bildene
 
-#lag et nice datasett uten å fylle opp
+
 
 
 
