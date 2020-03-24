@@ -31,6 +31,8 @@ def split_dataset_to_train_test_val(dir, out_dir):
 if __name__ == '__main__':
     dir = "../../dataset/db_original"
     out_dir = "../../dataset/db_original_split"
+    for f in os.listdir(dir):
+        print(f)
     split_dataset_to_train_test_val(dir, out_dir)
 
     #dir = sys.argv[1]
