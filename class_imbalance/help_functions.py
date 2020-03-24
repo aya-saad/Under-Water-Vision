@@ -22,6 +22,8 @@ def dataset_info_to_csv(dir):
     df.to_csv("{}_info.csv".format(dir.split("/")[0]))
 
 def split_dataset_to_train_test_val(dir, out_dir):
+    for f in os.listdir(dir):
+        print(f)
     split_folders.ratio(dir, output=out_dir, seed=1337, ratio=(.7, .15, .15))
 
 
