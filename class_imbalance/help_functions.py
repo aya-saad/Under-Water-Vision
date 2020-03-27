@@ -29,11 +29,34 @@ def split_dataset_to_train_test_val(dir, out_dir):
 
 
 if __name__ == '__main__':
+    # Split dataset
+    """
     dir = "../../dataset/db_original"
     out_dir = "../../dataset/db_original_split"
     for f in os.listdir(dir):
         print(f)
-    split_dataset_to_train_test_val(dir, out_dir)
+    split_dataset_to_train_test_val(dir, out_dir)"""
 
-    #dir = sys.argv[1]
-    #dataset_info_to_csv(dir)
+    # Dataset to csv
+    """
+    dir = sys.argv[1]
+    #dataset_info_to_csv(dir)"""
+
+
+    dirr = "../../dataset/db_original_split"
+    fs = ["train", "test", "val"]
+
+    for f in fs:
+        path = "{}/{}".format(dirr, f)
+        classes = [name for name in os.listdir(path) if name != ".DS_Store"]
+        print(classes)
+        data = []
+
+        tot = 0
+        for label in classes:
+            n = len([name for name in os.listdir("{}/{}".format(path, label)) if name.endswith("tiff")])
+            data.append([label, n])
+            tot += n
+        print("\nfolder: ", f, "n: ", tot)
+        print(data)
+
