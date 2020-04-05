@@ -1,8 +1,8 @@
-import sys
 import os
 from PIL import Image
 import random
-import pandas as pd
+
+
 
 BIGGEST_CLASS = "bubble"
 SMALLEST_CLASS = "fish_egg"
@@ -63,10 +63,8 @@ def random_undersampling(path, class_instances):
             imgs.pop(n)
 
 
-
-
-
 if __name__ == '__main__':
+    """
     #path = sys.argv[0]
     path_original = "../../dataset/db_undersampled/train"
     class_instances = get_number_of_instances(path_original)
@@ -78,5 +76,6 @@ if __name__ == '__main__':
     #random_undersampling(path_undersampled, class_instances)
     print("oversampled ", class_instances)
 
-    #random_minority_oversampling(path, class_instances)
+    #random_minority_oversampling(path, class_instances)"""
+
 
